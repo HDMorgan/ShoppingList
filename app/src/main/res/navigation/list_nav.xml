@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/list_nav"
+    app:startDestination="@id/listFragment">
+
+    <fragment
+        android:id="@+id/listFragment"
+        android:name="com.harrydmorgan.shoppinglist.ListFragment"
+        android:label="Shopping"
+        tools:layout="@layout/fragment_list" />
+    <fragment
+        android:id="@+id/collectionsFragment"
+        android:name="com.harrydmorgan.shoppinglist.CollectionsFragment"
+        android:label="Collections"
+        tools:layout="@layout/fragment_collections" >
+    </fragment>
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.harrydmorgan.shoppinglist.HistoryFragment"
+        android:label="History"
+        tools:layout="@layout/fragment_history" />
+</navigation>
