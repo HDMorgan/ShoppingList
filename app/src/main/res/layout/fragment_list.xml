@@ -22,9 +22,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Add item"
-        android:inputType="textPersonName"
+        android:imeOptions="actionNext"
+        android:singleLine="true"
         android:textSize="28sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

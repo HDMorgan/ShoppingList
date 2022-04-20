@@ -2,15 +2,21 @@ package com.harrydmorgan.shoppinglist;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,25 +75,40 @@ public class ListFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_list, container, false);
 
+
         ArrayList<String> arr = new ArrayList<>();
         arr.add("One");
-        arr.add("Two");
-        arr.add("Three");
-        arr.add("Four");
 
         RecyclerView recyclerView = view.findViewById(R.id.rec_view);
         ListAdapter adapter = new ListAdapter(view.getContext(), arr);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         recyclerView.setAdapter(adapter);
 
-        TextView txtAddNew = view.findViewById(R.id.txtNewItem);
-        txtAddNew.setOnKeyListener(new View.OnKeyListener() {
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
-            public boolean onKey(View view, int i, KeyEvent event) {
-                if (i == KeyEvent.KEYCODE_ENTER) {
-                    Toast.makeText(view.getContext(), txtAddNew.getText().toString(), Toast.LENGTH_SHORT);
-                }
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
 
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                adapter.removeItem(position);
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
+        EditText txtAddNew = (EditText) view.findViewById(R.id.txtNewItem);
+        txtAddNew.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_NEXT) {
+                    adapter.addItem(txtAddNew.getText().toString());
+                    txtAddNew.setText("");
+                    return true;
+                }
                 return false;
             }
         });

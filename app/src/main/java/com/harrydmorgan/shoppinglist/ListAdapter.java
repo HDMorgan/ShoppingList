@@ -39,6 +39,16 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
         return items.size();
     }
 
+    public void addItem(String item) {
+        items.add(item);
+        notifyItemInserted(items.size() - 1);
+    }
+
+    public void removeItem(int position) {
+        items.remove(position);
+        notifyItemRemoved(position);
+    }
+
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
         TextView listText;
