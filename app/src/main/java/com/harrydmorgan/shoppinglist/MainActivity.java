@@ -26,8 +26,6 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNav = binding.bottomNavigation;
 
-        dbHelper = new DatabaseHelper(this);
-
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainerView);
         NavController navController = navHostFragment.getNavController();
 

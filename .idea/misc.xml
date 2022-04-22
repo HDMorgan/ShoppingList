@@ -3,12 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/drawable/ic_arrow_up.xml" value="0.4505" />
         <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/drawable/ic_list.xml" value="0.362" />
         <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/layout/fragment_collections.xml" value="0.44895833333333335" />
         <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/layout/fragment_history.xml" value="0.5234375" />
         <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/layout/fragment_list.xml" value="0.5234375" />
         <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/layout/list_fragment.xml" value="0.253531786074672" />
+        <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/layout/list_header.xml" value="0.44895833333333335" />
         <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/layout/list_item.xml" value="0.5234375" />
         <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.5234375" />
       </map>

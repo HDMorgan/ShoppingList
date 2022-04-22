@@ -1,5 +1,6 @@
 package com.harrydmorgan.shoppinglist;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -24,6 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String listTable = "CREATE TABLE list (" +
+//                "id INT PRIMARY KEY AUTOINCREMENT," +
                 "sub_list TEXT, " +
                 "item_name TEXT);";
         db.execSQL(listTable);
@@ -32,6 +34,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int i, int i1) {
+
+    }
+
+    public boolean addNewItem(String item) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues newItem = new ContentValues();
+        newItem.put("sub_list", "main");
+        newItem.put("item_name", item);
+        long result = db.insert("list", null, newItem);
+        if (result == -1) {
+            return false;
+        }
+        return true;
+
 
     }
 }
