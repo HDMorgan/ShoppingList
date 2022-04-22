@@ -76,8 +76,8 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
 
         adapter = new SectionedRecyclerViewAdapter();
 
-        adapter.addSection(new ExpandableSection("Main", arr1, this));
-        adapter.addSection( new ExpandableSection("Checked", arr2, this));
+        adapter.addSection(new ExpandableSection("main", listItems.get("main"), this));
+        adapter.addSection( new ExpandableSection("checked", listItems.get("checked"), this));
 
         recyclerView.setAdapter(adapter);
 
@@ -92,8 +92,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
                 int position = viewHolder.getAdapterPosition();
                 ExpandableSection section = (ExpandableSection) adapter.getSectionForPosition(position);
                 int i = adapter.getPositionInSection(position);
-
-                Toast.makeText(view.getContext(), section.getTitle() + i, Toast.LENGTH_SHORT).show();
+                listItems.get(section.getTitle()).remove(i);
                 adapter.notifyItemRemoved(position);
             }
 
@@ -109,17 +108,18 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
         EditText txtAddNew = (EditText) view.findViewById(R.id.txtNewItem);
-//        txtAddNew.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-//            @Override
-//            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-//                if (i == EditorInfo.IME_ACTION_NEXT) {
-//                    adapter.addItem(txtAddNew.getText().toString());
-//                    txtAddNew.setText("");
-//                    return true;
-//                }
-//                return false;
-//            }
-//        });
+        txtAddNew.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_NEXT) {
+                    listItems.get("main").add(txtAddNew.getText().toString());
+                    adapter.notifyDataSetChanged();
+                    txtAddNew.setText("");
+                    return true;
+                }
+                return false;
+            }
+        });
 
         return view;
     }
