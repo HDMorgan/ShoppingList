@@ -1,13 +1,15 @@
 package com.harrydmorgan.shoppinglist;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ExpandableListAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import io.github.luizgrp.sectionedrecyclerviewadapter.Section;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionAdapter;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 
@@ -28,6 +29,9 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
 
     SectionedRecyclerViewAdapter adapter;
     HashMap<String, ArrayList<String>> listItems;
+    View view;
+    ArrayList<String> checkedCat;
+    Spinner categorySpinner;
 
     public ListFragment() {
         // Required empty public constructor
@@ -42,12 +46,22 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_list, container, false);
+        view = inflater.inflate(R.layout.fragment_list, container, false);
 
         DatabaseHelper db = new DatabaseHelper(view.getContext());
         db.addNewItem("Test item 2");
 
-        HashMap<String, ArrayList<String>> listItems = new HashMap<>();
+        listItems = new HashMap<>();
+
+
+        ArrayList<String> categories = new ArrayList<>();
+        categories.add("Main");
+        categories.add("Second");
+        categories.add("Add new...");
+
+        categorySpinner = view.findViewById(R.id.category_spinner);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(view.getContext(), R.layout.spinner_item, categories);
+        categorySpinner.setAdapter(spinnerAdapter);
 
 
         ArrayList<String> arr1 = new ArrayList<>();
@@ -57,6 +71,11 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         arr1.add("One");
         arr1.add("One");
 
+        ArrayList<String> arr3 = new ArrayList<>();
+        arr3.add("This");
+        arr3.add("This");
+        arr3.add("This");
+
         ArrayList<String> arr2 = new ArrayList<>();
         arr2.add("Two");
         arr2.add("Two");
@@ -65,8 +84,17 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         arr2.add("Two");
         arr2.add("Two");
 
-        listItems.put("main", arr1);
-        listItems.put("checked", arr2);
+        checkedCat = new ArrayList<>();
+        checkedCat.add("Main");
+        checkedCat.add("Main");
+        checkedCat.add("Main");
+        checkedCat.add("Main");
+        checkedCat.add("Main");
+        checkedCat.add("Main");
+
+        listItems.put("Main", arr1);
+        listItems.put("Second", arr3);
+        listItems.put("Checked", arr2);
 
         RecyclerView recyclerView = view.findViewById(R.id.rec_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
@@ -76,8 +104,12 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
 
         adapter = new SectionedRecyclerViewAdapter();
 
-        adapter.addSection(new ExpandableSection("main", listItems.get("main"), this));
-        adapter.addSection( new ExpandableSection("checked", listItems.get("checked"), this));
+        ExpandableSection checkedSection = new ExpandableSection("Checked", listItems.get("Checked"), this, "Checked");
+        checkedSection.setCheckedCategories(checkedCat);
+
+        adapter.addSection(new ExpandableSection("Main", listItems.get("Main"), this, "Check"));
+        adapter.addSection(new ExpandableSection("Second", listItems.get("Second"), this, "Check"));
+        adapter.addSection(checkedSection);
 
         recyclerView.setAdapter(adapter);
 
@@ -92,7 +124,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
                 int position = viewHolder.getAdapterPosition();
                 ExpandableSection section = (ExpandableSection) adapter.getSectionForPosition(position);
                 int i = adapter.getPositionInSection(position);
-                listItems.get(section.getTitle()).remove(i);
+                section.removeItem(i);
                 adapter.notifyItemRemoved(position);
             }
 
@@ -112,7 +144,8 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 if (i == EditorInfo.IME_ACTION_NEXT) {
-                    listItems.get("main").add(txtAddNew.getText().toString());
+                    String cat = categorySpinner.getSelectedItem().toString();
+                    listItems.get(cat).add(txtAddNew.getText().toString());
                     adapter.notifyDataSetChanged();
                     txtAddNew.setText("");
                     return true;
@@ -144,6 +177,22 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
 
     @Override
     public void onItemRootViewClicked(@NonNull ExpandableSection section, int itemAdapterPosition) {
+        int position = adapter.getPositionInSection(itemAdapterPosition);
+        if (section.getTitle().equals("Checked")) {
+            String category = section.getCheckedCategory(position);
+            listItems.get(category).add(section.getItem(position));
+            section.removeItem(position);
+            adapter.notifyItemRemoved(itemAdapterPosition);
+            adapter.notifyDataSetChanged();
+
+        } else {
+            listItems.get("Checked").add(section.getItem(position));
+            checkedCat.add(section.getTitle());
+            section.removeItem(position);
+            adapter.notifyItemRemoved(itemAdapterPosition);
+            adapter.notifyItemInserted(adapter.getItemCount() - 1);
+        }
+//
         return;
     }
 }
