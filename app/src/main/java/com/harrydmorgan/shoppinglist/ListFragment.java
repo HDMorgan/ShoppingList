@@ -1,7 +1,6 @@
 package com.harrydmorgan.shoppinglist;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -30,7 +28,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
     SectionedRecyclerViewAdapter adapter;
     HashMap<String, ArrayList<String>> listItems;
     View view;
-    ArrayList<String> checkedCat;
+    ArrayList<String> checkedCategories;
     Spinner categorySpinner;
 
     public ListFragment() {
@@ -48,69 +46,41 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_list, container, false);
 
-        DatabaseHelper db = new DatabaseHelper(view.getContext());
-        db.addNewItem("Test item 2");
-
         listItems = new HashMap<>();
+        checkedCategories = new ArrayList<>();
 
+        DatabaseHelper dbHelper = new DatabaseHelper(view.getContext());
 
-        ArrayList<String> categories = new ArrayList<>();
-        categories.add("Main");
-        categories.add("Second");
-        categories.add("Add new...");
+        ArrayList<String> categories = dbHelper.getCategories(DatabaseHelper.LIST_TABLE, true);
+
+        adapter = new SectionedRecyclerViewAdapter();
+        for (String i : categories) {
+            listItems.put(i, new ArrayList<String>());
+        }
+        listItems.put("Checked", new ArrayList<String>());
+
 
         categorySpinner = view.findViewById(R.id.category_spinner);
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(view.getContext(), R.layout.spinner_item, categories);
         categorySpinner.setAdapter(spinnerAdapter);
 
 
-        ArrayList<String> arr1 = new ArrayList<>();
-        arr1.add("One");
-        arr1.add("One");
-        arr1.add("One");
-        arr1.add("One");
-        arr1.add("One");
-
-        ArrayList<String> arr3 = new ArrayList<>();
-        arr3.add("This");
-        arr3.add("This");
-        arr3.add("This");
-
-        ArrayList<String> arr2 = new ArrayList<>();
-        arr2.add("Two");
-        arr2.add("Two");
-        arr2.add("Two");
-        arr2.add("Two");
-        arr2.add("Two");
-        arr2.add("Two");
-
-        checkedCat = new ArrayList<>();
-        checkedCat.add("Main");
-        checkedCat.add("Main");
-        checkedCat.add("Main");
-        checkedCat.add("Main");
-        checkedCat.add("Main");
-        checkedCat.add("Main");
-
-        listItems.put("Main", arr1);
-        listItems.put("Second", arr3);
-        listItems.put("Checked", arr2);
-
         RecyclerView recyclerView = view.findViewById(R.id.rec_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
 
-//        ListAdapter adapter = new ListAdapter(view.getContext(), arr);
-//        recyclerView.setAdapter(adapter);
+        dbHelper.populateListHashmap(listItems, checkedCategories);
 
-        adapter = new SectionedRecyclerViewAdapter();
-
+        //Populating recyclerview with Main at top and checked at bottom
+        adapter.addSection(new ExpandableSection("Main", listItems.get("Main"), this, "Item"));
+        for (String i : listItems.keySet()) {
+            if (! (i.equals("Main") || i.equals("Checked"))) {
+                adapter.addSection(new ExpandableSection(i, listItems.get(i), this, "Item"));
+            }
+        }
         ExpandableSection checkedSection = new ExpandableSection("Checked", listItems.get("Checked"), this, "Checked");
-        checkedSection.setCheckedCategories(checkedCat);
+        checkedSection.setCheckedCategories(checkedCategories);
 
-        adapter.addSection(new ExpandableSection("Main", listItems.get("Main"), this, "Check"));
-        adapter.addSection(new ExpandableSection("Second", listItems.get("Second"), this, "Check"));
         adapter.addSection(checkedSection);
-
         recyclerView.setAdapter(adapter);
 
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -144,8 +114,10 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 if (i == EditorInfo.IME_ACTION_NEXT) {
-                    String cat = categorySpinner.getSelectedItem().toString();
-                    listItems.get(cat).add(txtAddNew.getText().toString());
+                    String category = categorySpinner.getSelectedItem().toString();
+                    String item = txtAddNew.getText().toString();
+                    listItems.get(category).add(item);
+                    dbHelper.addNewItem(item, category);
                     adapter.notifyDataSetChanged();
                     txtAddNew.setText("");
                     return true;
@@ -187,7 +159,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
 
         } else {
             listItems.get("Checked").add(section.getItem(position));
-            checkedCat.add(section.getTitle());
+            checkedCategories.add(section.getTitle());
             section.removeItem(position);
             adapter.notifyItemRemoved(itemAdapterPosition);
             adapter.notifyItemInserted(adapter.getItemCount() - 1);

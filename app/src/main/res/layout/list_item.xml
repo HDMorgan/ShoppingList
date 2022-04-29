@@ -37,7 +37,6 @@
             android:layout_margin="8dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:textColor="@color/black"
             android:singleLine="true"
             android:textSize="@dimen/default_font_size"
             tools:text="@tools:sample/cities" />
@@ -61,7 +60,7 @@
         android:layout_width="1dp"
         android:layout_height="match_parent"
         android:layout_margin="5dp"
-        android:background="#000000" />
+        android:background="@color/black" />
 
 
     <ImageView

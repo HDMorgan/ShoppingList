@@ -12,8 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:textSize="@dimen/default_font_size"
-        tools:text="@tools:sample/first_names"
-        android:textColor="@color/black"/>
+        tools:text="@tools:sample/first_names" />
 
     <ImageView
         android:id="@+id/list_arrow"
