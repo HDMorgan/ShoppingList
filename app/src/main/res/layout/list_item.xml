@@ -74,10 +74,4 @@
         app:srcCompat="@drawable/ic_check"
         app:tint="@color/black" />
 
-</LinearLayout><!--        <TextView-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:text="Sub-cat"/>-->
-
-    <!--    </androidx.cardview.widget.CardView>-->
-    <!--</androidx.constraintlayout.widget.ConstraintLayout>-->
+</LinearLayout>

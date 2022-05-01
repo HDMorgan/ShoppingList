@@ -9,8 +9,13 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 
@@ -25,6 +30,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String LOCATIONS_TABLE = "locations";
     public static final String COLLECTIONS_TABLE = "collections";
 
+    public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
+
 
     public DatabaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -36,6 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String locationsTable = "CREATE TABLE locations (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "name TEXT," +
+                "date DATE," +
                 "latitude FLOAT," +
                 "longitude FLOAT);";
         db.execSQL(locationsTable);
@@ -43,10 +52,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String listTable = "CREATE TABLE list (" +
                 "name TEXT," +
                 "category TEXT, " +
-                "locationId int," +
-                "FOREIGN KEY (locationId) " +
-                "REFERENCES locations(id) " +
-                "ON DELETE SET NULL);";
+                "locationId int);";
         db.execSQL(listTable);
 
         String collectionsTable = "CREATE TABLE collections (" +
@@ -90,7 +96,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             .add(c.getString(0));
                 } else {
                     items.get("Checked").add(c.getString(0));
-                    checkedCategories.add(c.getString(0));
+                    checkedCategories.add(c.getString(1));
                 }
             } while (c.moveToNext());
         }
@@ -116,8 +122,68 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return categories;
     }
 
-    public void checkItem(String item, String category) {
+    public void checkItem(String item, String category, long id) {
         SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE list SET " +
+                "locationId = " + id +
+                " WHERE name = '" + item +
+                "' AND category = '" + category +
+                "' AND locationId IS NULL;";
+        db.execSQL(query);
+    }
 
+    public void uncheckItem(String item, String category) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "UPDATE list SET " +
+                "locationId = NULL" +
+                " WHERE name = '" + item +
+                "' AND category = '" + category +
+                "' AND locationId NOT NULL;";
+        db.execSQL(query);
+    }
+
+    public ShopLocation getNewShop(String shopName, double latitude, double longitude) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("name", shopName);
+        cv.put("latitude", latitude);
+        cv.put("longitude", longitude);
+        Date currentDate = new Date();
+        cv.put("date", sdf.format(currentDate));
+        long id = db.insert("locations", null, cv);
+        return new ShopLocation(id, shopName, currentDate, latitude, longitude);
+    }
+
+    public ShopLocation getLastShop() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM locations " +
+                "ORDER BY id DESC " +
+                "LIMIT 1;";
+        Cursor c = db.rawQuery(query, null);
+        if (c.moveToFirst()) {
+            Date date = null;
+            try {
+                date = sdf.parse(c.getString(2));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            return new ShopLocation(
+                    c.getLong(0),
+                    c.getString(1),
+                    date,
+                    c.getDouble(3),
+                    c.getDouble(4)
+            );
+        }
+        return null;
+    }
+
+    public void deleteItem(String item, String category) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM list WHERE " +
+                "name = '" + item +
+                "' AND category = '" + category +
+                "' AND locationId IS NULL";
+        db.execSQL(query);
     }
 }

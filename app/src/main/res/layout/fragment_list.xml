@@ -20,18 +20,28 @@
             android:id="@+id/shop_name_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:visibility="gone"/>
+            android:textSize="20sp" />
 
         <TextView
+            android:id="@+id/shop_name_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:textSize="20sp"
-            android:textColor="@color/purple_500"
-            android:text="@string/set_shop"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:text="@string/clear"
+            android:textColor="@color/purple_500"
+            android:textSize="20sp" />
+
+        <ProgressBar
+            android:id="@+id/geoProgress"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:layout_centerInParent="true"
+            android:indeterminateTint="@color/purple_500"
+            android:visibility="gone"
             />
+
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView

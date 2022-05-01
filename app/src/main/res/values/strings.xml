@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Shopping</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="add_item">Add item</string>
-    <string name="set_shop">Set shop</string>
+    <string name="dont_show">Don\'t show this again</string>
+    <string name="clear">Set shop</string>
 </resources>

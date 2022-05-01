@@ -1,15 +1,25 @@
 package com.harrydmorgan.shoppinglist;
 
-public class ShopLocation {
-    private int id;
-    private String name;
-    private float latitude;
-    private float longitude;
+import java.util.Date;
 
-    public ShopLocation(int id, String name, float latitude, float longitude) {
+public class ShopLocation {
+    private long id;
+    private String name;
+    private Date date;
+    private double latitude;
+    private double longitude;
+
+    public ShopLocation(long id, String name, Date date, double latitude, double longitude) {
         this.id = id;
         this.name = name;
+        this.date = date;
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public String getName() {return name;}
+
+    public long getId() {
+        return id;
     }
 }

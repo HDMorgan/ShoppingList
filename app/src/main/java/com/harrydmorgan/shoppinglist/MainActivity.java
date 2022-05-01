@@ -33,17 +33,16 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        //TODO Dialog explaining location
 
         ActivityResultLauncher<String[]> locationPermissionRequest =
                 registerForActivityResult(new ActivityResultContracts
-                                .RequestMultiplePermissions(), result -> {});
+                        .RequestMultiplePermissions(), result -> {
+                });
 
         locationPermissionRequest.launch(new String[]{
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
         });
-
 
         bottomNav = binding.bottomNavigation;
 
