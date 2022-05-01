@@ -1,5 +1,6 @@
 package com.harrydmorgan.shoppinglist;
 
+import android.content.ClipData;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -48,6 +49,9 @@ public class ExpandableSection extends Section {
     //Item adapter
     @Override
     public RecyclerView.ViewHolder getItemViewHolder(View view) {
+        if (type.equals("Checked")) {
+            return new CheckedItemViewHolder(view);
+        }
         return new ItemViewHolder(view);
     }
 
@@ -85,7 +89,6 @@ public class ExpandableSection extends Section {
                 expanded ? R.drawable.ic_arrow_up : R.drawable.ic_arrow_down
         );
         header.root.setOnClickListener(v -> clickListener.onHeaderRootViewClicked(this));
-
     }
 
     boolean isExpanded() {
@@ -110,6 +113,12 @@ public class ExpandableSection extends Section {
             root = itemView.getRootView();
             icon = itemView.findViewById(R.id.list_icon);
             divider = itemView.findViewById(R.id.list_divider);
+        }
+    }
+
+    public class CheckedItemViewHolder extends ItemViewHolder {
+        CheckedItemViewHolder(View itemView) {
+            super(itemView);
         }
     }
 

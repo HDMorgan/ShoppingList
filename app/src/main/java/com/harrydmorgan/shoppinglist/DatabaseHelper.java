@@ -64,8 +64,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "REFERENCES locations(id) " +
                 "ON DELETE CASCADE);";
         db.execSQL(historyTable);
-
-        Toast.makeText(context, "Database stuff", Toast.LENGTH_SHORT).show();
     }
 
     @Override
