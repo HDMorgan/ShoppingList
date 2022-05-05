@@ -12,13 +12,13 @@
         tools:layout="@layout/fragment_list" />
     <fragment
         android:id="@+id/collectionsFragment"
-        android:name="com.harrydmorgan.shoppinglist.CollectionsFragment"
+        android:name="com.harrydmorgan.shoppinglist.collections.CollectionsFragment"
         android:label="Collections"
-        tools:layout="@layout/fragment_collections" >
-    </fragment>
+        tools:layout="@layout/fragment_collections" />
+
     <fragment
         android:id="@+id/historyFragment"
-        android:name="com.harrydmorgan.shoppinglist.HistoryFragment"
+        android:name="com.harrydmorgan.shoppinglist.history.HistoryFragment"
         android:label="History"
         tools:layout="@layout/fragment_history" />
 </navigation>

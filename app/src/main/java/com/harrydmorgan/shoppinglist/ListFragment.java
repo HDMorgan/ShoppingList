@@ -3,7 +3,6 @@ package com.harrydmorgan.shoppinglist;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -11,8 +10,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +21,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -34,14 +29,8 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionAdapter;
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
@@ -53,7 +42,6 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
     private View view;
     private ArrayList<String> checkedCategories;
     private Spinner categorySpinner;
-    private FusedLocationProviderClient fusedLocationClient;
     private TextView shopNameText;
     private TextView shopNameButton;
     private ShopLocation currentShop;
@@ -78,18 +66,12 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_list, container, false);
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
-
         listItems = new HashMap<>();
         checkedCategories = new ArrayList<>();
 
         dbHelper = new DatabaseHelper(view.getContext());
 
-        currentShop = dbHelper.getLastShop();
-
-
         categories = dbHelper.getCategories(DatabaseHelper.LIST_TABLE, true);
-
 
         adapter = new SectionedRecyclerViewAdapter();
         for (String i : categories) {
@@ -190,13 +172,25 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         shopNameButton = view.findViewById(R.id.shop_name_button);
         geoProgress = view.findViewById(R.id.geoProgress);
 
-        if (currentShop != null) {
+        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        if (sharedPreferences.getBoolean("atShop", false)) {
+            currentShop = dbHelper.getLastShop();
             shopNameText.setText("At " + currentShop.getName());
             shopNameButton.setText("Clear");
         }
 
         shopNameButton.setOnClickListener(view -> {
             if (currentShop == null) {
+                if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    new AlertDialog.Builder(getContext())
+                            .setTitle("Permission error")
+                            .setMessage("In order to set your shop, this app needs to have permissions for location.\nYou can change this in your phones app settings")
+                            .setNeutralButton("OK", null)
+                            .show();
+                    return;
+                }
                 TextDialog shopDialog = new TextDialog("Set shop", new TextDialog.TextDialogListener() {
                     @Override
                     public void setAction(String textEntered) {
@@ -215,13 +209,13 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
             } else {
                 currentShop = null;
                 shopNameText.setText("");
-                shopNameButton.setText("Set shop");
+                shopNameButton.setText(R.string.set_shop);
+                editor.putBoolean("atShop", false);
+                editor.apply();
             }
         });
 
         //Hint dialog explaining how items are recorded
-        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
         if (sharedPreferences.getBoolean("showHint", true)) {
             View checkView = inflater.inflate(R.layout.checkbox, null);
             CheckBox checkBox = checkView.findViewById(R.id.dialog_check);
@@ -244,11 +238,6 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
     private void setLocation(String shopName) {
 
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            new AlertDialog.Builder(getContext())
-                    .setTitle("Permission error")
-                    .setMessage("In order to set your shop, this app needs to have permissions for location.\nYou can change this in your phones app settings")
-                    .setNeutralButton("OK", null)
-                    .show();
             return;
         }
         final LocationListener locationListener = new LocationListener() {
@@ -258,6 +247,10 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
                 currentShop = dbHelper.getNewShop(shopName, location.getLatitude(), location.getLongitude());
                 shopNameText.setText("At " + shopName);
                 shopNameButton.setText("Clear");
+                SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("atShop", true);
+                editor.apply();
             }
         };
 
@@ -274,6 +267,11 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         final LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         locationManager.requestSingleUpdate(criteria, locationListener, null);
+    }
+
+    private void validateCurrentShop() {
+
+
     }
 
     @Override
@@ -300,7 +298,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
             String item = section.getItem(position);
         if (section.getTitle().equals("Checked")) {
             String category = section.getCheckedCategory(position);
-            if (!listItems.keySet().contains(category)) {
+            if (!listItems.containsKey(category)) {
                 addItemCategory(category);
             }
             dbHelper.uncheckItem(item, category);
@@ -308,9 +306,8 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
             section.removeItem(position);
             adapter.notifyItemRemoved(itemAdapterPosition);
             adapter.notifyDataSetChanged();
-
         } else {
-            Long id;
+            long id;
             if (currentShop != null) {
                 id = currentShop.getId();
             } else {
@@ -325,6 +322,16 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         }
 //
         return;
+    }
+
+    @Override
+    public void clearButtonClicked() {
+        int sectionSize = listItems.get("Checked").size();
+        int startPos = adapter.getItemCount() - sectionSize;
+        listItems.get("Checked").clear();
+        checkedCategories.clear();
+        adapter.notifyItemRangeRemoved(startPos, sectionSize);
+        dbHelper.saveItems();
     }
 
     private void addItemCategory(String title) {

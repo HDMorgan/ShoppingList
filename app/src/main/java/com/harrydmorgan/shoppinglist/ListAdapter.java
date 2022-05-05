@@ -10,28 +10,30 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.zip.Inflater;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> {
     private ArrayList<String> items;
     private Context context;
+    private ClickListener click;
 
-    public ListAdapter(Context context, ArrayList<String> items) {
+    public ListAdapter(Context context, ArrayList<String> items, ClickListener click) {
         this.context = context;
         this.items = items;
+        this.click = click;
     }
 
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.list_item, parent, false);
+        View view = inflater.inflate(R.layout.text_item, parent, false);
         return new MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.listText.setText(items.get(position));
+        holder.itemText.setText(items.get(position));
+        holder.root.setOnClickListener(view -> click.itemClick(position));
     }
 
     @Override
@@ -39,24 +41,20 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
         return items.size();
     }
 
-    public void addItem(String item) {
-        items.add(item);
-        notifyItemInserted(items.size() - 1);
-    }
-
-    public void removeItem(int position) {
-        items.remove(position);
-        notifyItemRemoved(position);
-    }
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
-        TextView listText;
+        TextView itemText;
+        View root;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            listText = itemView.findViewById(R.id.listText);
-
+            itemText = itemView.findViewById(R.id.itemText);
+            root = itemView.getRootView();
         }
+    }
+
+    public interface ClickListener {
+        public void itemClick(int position);
     }
 }

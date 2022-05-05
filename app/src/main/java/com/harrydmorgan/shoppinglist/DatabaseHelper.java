@@ -186,4 +186,74 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "' AND locationId IS NULL";
         db.execSQL(query);
     }
+
+    public void saveItems() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String recordItems = "INSERT INTO history " +
+                "SELECT * FROM list WHERE " +
+                "locationId NOT NULL AND " +
+                "locationId != -1;";
+        String clearItems = "DELETE FROM list WHERE " +
+                "locationid NOT NULL";
+        db.execSQL(recordItems);
+        db.execSQL(clearItems);
+    }
+
+    public ArrayList<String> getHistoryDates() {
+        ArrayList<String> dates = new ArrayList<>();
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "SELECT DISTINCT date FROM locations " +
+                "ORDER BY date DESC;";
+        Cursor c = db.rawQuery(query, null);
+        if (c.moveToFirst()) {
+            do {
+                dates.add(c.getString(0));
+            } while (c.moveToNext());
+        }
+        return dates;
+    }
+
+    public void getShopNames(String date, ArrayList<String> nameResults, ArrayList<Long> idResults) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT id, name FROM locations " +
+                "WHERE date = '" + date + "';";
+        Cursor c = db.rawQuery(query, null);
+        if (c.moveToFirst()) {
+            do {
+                idResults.add(c.getLong(0));
+                nameResults.add(c.getString(1));
+            } while (c.moveToNext());
+        }
+    }
+
+    public HashMap<String, ArrayList<String>> getItemsFromHistory(long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        HashMap<String, ArrayList<String>> items = new HashMap<>();
+        String query = "SELECT name, category FROM history " +
+                "WHERE locationId = " + id + ";";
+        Cursor c = db.rawQuery(query, null);
+        if (c.moveToFirst()) {
+            do {
+                String cat = c.getString(1);
+                if (! items.containsKey(cat)) {
+                    items.put(cat, new ArrayList<>());
+                }
+                items.get(cat).add(c.getString(0));
+            } while (c.moveToNext());
+        }
+        return items;
+    }
+
+    public double[] getGeo(long id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        double[] geo = new double[2];
+        String query = "SELECT latitude, longitude FROM locations " +
+                "WHERE id = " + id + ";";
+        Cursor c = db.rawQuery(query, null);
+        if (c.moveToFirst()) {
+            geo[0] = c.getDouble(0);
+            geo[1] = c.getDouble(1);
+        }
+        return geo;
+    }
 }

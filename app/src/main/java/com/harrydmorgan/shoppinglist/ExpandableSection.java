@@ -24,8 +24,8 @@ public class ExpandableSection extends Section {
 
     private boolean expanded = true;
 
-    ExpandableSection(@NonNull final String title, @NonNull final ArrayList<String> items,
-                              @NonNull final ClickListener clickListener, String type) {
+    public ExpandableSection(@NonNull final String title, @NonNull final ArrayList<String> items,
+                             @NonNull final ClickListener clickListener, String type) {
         super(SectionParameters.builder()
                 .itemResourceId(R.layout.list_item)
                 .headerResourceId(R.layout.list_header)
@@ -49,7 +49,7 @@ public class ExpandableSection extends Section {
     //Item adapter
     @Override
     public RecyclerView.ViewHolder getItemViewHolder(View view) {
-        if (type.equals("Checked")) {
+        if (type != null && type.equals("Checked")) {
             return new CheckedItemViewHolder(view);
         }
         return new ItemViewHolder(view);
@@ -85,17 +85,24 @@ public class ExpandableSection extends Section {
         HeaderViewHolder header = (HeaderViewHolder) holder;
 
         header.titleTxt.setText(title);
+        if (title.equals("Checked")) {
+            header.clearButton.setVisibility(View.VISIBLE);
+            header.clearButton.setText("Clear");
+            header.clearButton.setOnClickListener(view -> {
+                clickListener.clearButtonClicked();
+            });
+        }
         header.arrow.setImageResource(
                 expanded ? R.drawable.ic_arrow_up : R.drawable.ic_arrow_down
         );
         header.root.setOnClickListener(v -> clickListener.onHeaderRootViewClicked(this));
     }
 
-    boolean isExpanded() {
+    public boolean isExpanded() {
         return expanded;
     }
 
-    void setExpanded(final boolean expanded) {
+    public void setExpanded(final boolean expanded) {
         this.expanded = expanded;
     }
 
@@ -127,11 +134,13 @@ public class ExpandableSection extends Section {
         TextView titleTxt;
         View root;
         ImageView arrow;
+        TextView clearButton;
         public HeaderViewHolder(@NonNull View itemView) {
             super(itemView);
             root = itemView.getRootView();
             titleTxt = itemView.findViewById(R.id.header_title);
             arrow = itemView.findViewById(R.id.list_arrow);
+            clearButton = itemView.findViewById(R.id.clear_button);
         }
     }
 
@@ -150,10 +159,12 @@ public class ExpandableSection extends Section {
 
     public String getCheckedCategory(int position) {return checkedCategories.get(position);}
 
-    interface ClickListener {
+    public interface ClickListener {
 
         void onHeaderRootViewClicked(@NonNull final ExpandableSection section);
 
         void onItemRootViewClicked(@NonNull final ExpandableSection section, final int itemAdapterPosition);
+
+        void clearButtonClicked();
     }
 }

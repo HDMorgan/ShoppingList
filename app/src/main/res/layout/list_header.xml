@@ -34,6 +34,7 @@
         tools:text="Clear"
         android:textColor="@color/purple_500"
         android:visibility="gone"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:focusable="true" />
 
 </RelativeLayout>

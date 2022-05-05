@@ -4,10 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".history.HistoryFragment">
+    tools:context=".history.ShopFragment"
+    android:background="#EEEEEE">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/history_recycler"
+        android:id="@+id/shop_name_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"

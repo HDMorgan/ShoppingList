@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:text="@string/clear"
+            android:text="@string/set_shop"
             android:textColor="@color/purple_500"
             android:textSize="20sp" />
 
