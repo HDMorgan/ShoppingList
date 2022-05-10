@@ -87,7 +87,7 @@ public class ExpandableSection extends Section {
         header.titleTxt.setText(title);
         if (title.equals("Checked")) {
             header.clearButton.setVisibility(View.VISIBLE);
-            header.clearButton.setText("Clear");
+            header.clearButton.setText(R.string.clear);
             header.clearButton.setOnClickListener(view -> {
                 clickListener.clearButtonClicked();
             });
@@ -152,7 +152,7 @@ public class ExpandableSection extends Section {
 
     public void removeItem(int position) {
         items.remove(position);
-        if (type.equals("Checked")) {
+        if (type != null && type.equals("Checked")) {
             checkedCategories.remove(position);
         }
     }

@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.harrydmorgan.shoppinglist.DatabaseHelper;
-import com.harrydmorgan.shoppinglist.ListAdapter;
 import com.harrydmorgan.shoppinglist.R;
 
 import java.util.ArrayList;

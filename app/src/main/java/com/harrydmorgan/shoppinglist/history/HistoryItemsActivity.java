@@ -56,9 +56,13 @@ public class HistoryItemsActivity extends AppCompatActivity implements Expandabl
 
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.history_items_menu, menu);
+        getMenuInflater().inflate(R.menu.action_bar_menu, menu);
+        menu.findItem(R.id.pageAction)
+                .setIcon(R.drawable.ic_location)
+                .setTitle("Open location");
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -69,7 +73,7 @@ public class HistoryItemsActivity extends AppCompatActivity implements Expandabl
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.openLocation:
+            case R.id.pageAction:
                 Uri uri = Uri.parse("geo:0,0?q=" + geo[0] + "," + geo[1]);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);

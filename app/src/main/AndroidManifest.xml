@@ -14,9 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ShoppingList">
         <activity
+            android:name=".collections.CollectionActivity"
+            android:exported="false" />
+        <activity
             android:name=".history.HistoryItemsActivity"
             android:exported="false"
-            android:parentActivityName=".history.ShopActivity"/>
+            android:parentActivityName=".history.ShopActivity" />
         <activity
             android:name=".history.ShopActivity"
             android:exported="false"

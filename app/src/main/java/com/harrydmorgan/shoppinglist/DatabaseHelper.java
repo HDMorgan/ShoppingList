@@ -5,19 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
-
-import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
@@ -31,7 +27,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLLECTIONS_TABLE = "collections";
 
     public static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-
 
 
     public DatabaseHelper(@Nullable Context context) {
@@ -106,7 +101,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ArrayList<String> getCategories(String table, boolean requireMain) {
         ArrayList<String> categories = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT DISTINCT category FROM list";
+        String query = "SELECT DISTINCT category FROM " + table;
         if (requireMain) {
             query += " WHERE category != 'Main'";
             categories.add("Main");
@@ -124,6 +119,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void checkItem(String item, String category, long id) {
         SQLiteDatabase db = this.getWritableDatabase();
+        item.replace("'", "\\'");
+        category.replace("'", "\\'");
         String query = "UPDATE list SET " +
                 "locationId = " + id +
                 " WHERE name = '" + item +
@@ -134,6 +131,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void uncheckItem(String item, String category) {
         SQLiteDatabase db = this.getWritableDatabase();
+        item.replace("'", "\\'");
+        category.replace("'", "\\'");
         String query = "UPDATE list SET " +
                 "locationId = NULL" +
                 " WHERE name = '" + item +
@@ -145,6 +144,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ShopLocation getNewShop(String shopName, double latitude, double longitude) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
+        shopName.replace("'", "\\'");
         cv.put("name", shopName);
         cv.put("latitude", latitude);
         cv.put("longitude", longitude);
@@ -180,6 +180,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void deleteItem(String item, String category) {
         SQLiteDatabase db = this.getWritableDatabase();
+        item.replace("'", "\\'");
+        category.replace("'", "\\'");
         String query = "DELETE FROM list WHERE " +
                 "name = '" + item +
                 "' AND category = '" + category +
@@ -235,7 +237,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (c.moveToFirst()) {
             do {
                 String cat = c.getString(1);
-                if (! items.containsKey(cat)) {
+                if (!items.containsKey(cat)) {
                     items.put(cat, new ArrayList<>());
                 }
                 items.get(cat).add(c.getString(0));
@@ -256,4 +258,72 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return geo;
     }
+
+    public ArrayList<String> getCollections() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList<String> collections = new ArrayList<>();
+        String query = "SELECT DISTINCT collection_name from collections;";
+        Cursor c = db.rawQuery(query, null);
+        if (c.moveToFirst()) {
+            do {
+                collections.add(c.getString(0));
+            } while (c.moveToNext());
+        }
+        return collections;
+    }
+
+    public void populateCollectionHashmap(HashMap<String, ArrayList<String>> listItems, String collectionName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        collectionName.replace("'", "\\'");
+        String query = "SELECT item_name, category FROM collections " +
+                "WHERE collection_name = '" + collectionName + "';";
+        Cursor c = db.rawQuery(query, null);
+        if (c.moveToFirst()) {
+            do {
+                listItems.get(c.getString(1)).add(c.getString(0));
+            } while (c.moveToNext());
+        }
+    }
+
+    public void deleteCollectionItem(String item, String category, String collectionName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        item.replace("'", "\\'");
+        category.replace("'", "\\'");
+        collectionName.replace("'", "\\'");
+        String query = "DELETE FROM collections WHERE " +
+                "item_name = '" + item +
+                "' AND category = '" + category +
+                "' AND collection_name = '" + collectionName + "';";
+        db.execSQL(query);
+    }
+
+
+    public void deleteCollection(String collectionName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        collectionName.replace("'", "\\'");
+        String query = "DELETE FROM collections WHERE " +
+                "collection_name = '" + collectionName + "';";
+        db.execSQL(query);
+    }
+
+    public void addCollectionItem(String item, String category, String collection) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues newItem = new ContentValues();
+        newItem.put("category", category);
+        newItem.put("item_name", item);
+        newItem.put("collection_name", collection);
+        db.insert(COLLECTIONS_TABLE, null, newItem);
+    }
+
+    public void insertCollection(String collection) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        collection.replace("'", "\\'");
+        String query = "INSERT INTO list (name, category) SELECT " +
+                "c.item_name, c.category FROM collections c WHERE " +
+                "c.collection_name = '" + collection +
+                "' AND c.item_name NOT IN (SELECT l.name FROM list l WHERE l.category = c.category " +
+                "AND locationId IS NULL);";
+        db.execSQL(query);
+    }
 }
+

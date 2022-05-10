@@ -1,4 +1,4 @@
-package com.harrydmorgan.shoppinglist;
+package com.harrydmorgan.shoppinglist.history;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,9 +9,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.harrydmorgan.shoppinglist.R;
+
 import java.util.ArrayList;
 
-public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> {
+public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder> {
     private ArrayList<String> items;
     private Context context;
     private ClickListener click;
@@ -24,14 +26,14 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
 
     @NonNull
     @Override
-    public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.text_item, parent, false);
-        return new MyViewHolder(view);
+        return new ListViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ListViewHolder holder, int position) {
         holder.itemText.setText(items.get(position));
         holder.root.setOnClickListener(view -> click.itemClick(position));
     }
@@ -42,12 +44,12 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.MyViewHolder> 
     }
 
 
-    public class MyViewHolder extends RecyclerView.ViewHolder{
+    public static class ListViewHolder extends RecyclerView.ViewHolder{
 
         TextView itemText;
         View root;
 
-        public MyViewHolder(@NonNull View itemView) {
+        public ListViewHolder(@NonNull View itemView) {
             super(itemView);
             itemText = itemView.findViewById(R.id.itemText);
             root = itemView.getRootView();

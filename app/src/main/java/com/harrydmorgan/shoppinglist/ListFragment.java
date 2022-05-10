@@ -11,6 +11,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -58,6 +60,16 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        getActivity().getMenuInflater().inflate(R.menu.action_bar_menu, menu);
+        menu.findItem(R.id.pageAction)
+                .setIcon(R.drawable.ic_add)
+                .setTitle("Set reminder");
+        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -90,6 +102,14 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
                     TextDialog dialog = new TextDialog("Add category", new TextDialog.TextDialogListener() {
                         @Override
                         public void setAction(String textEntered) {
+                            if (textEntered.equals("")) {
+                                categorySpinner.setSelection(0);
+                                return;
+                            }
+                            if (categories.contains(textEntered)) {
+                                categorySpinner.setSelection(categories.indexOf(textEntered));
+                                return;
+                            }
                             addItemCategory(textEntered);
                         }
 
@@ -159,10 +179,13 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
             if (i == EditorInfo.IME_ACTION_NEXT) {
                 String category = categorySpinner.getSelectedItem().toString();
                 String item = txtAddNew.getText().toString();
+                txtAddNew.setText("");
+                if (item.equals("") || listItems.get(category).contains(item)) {
+                    return true;
+                }
                 listItems.get(category).add(item);
                 dbHelper.addNewItem(item, category);
                 adapter.notifyDataSetChanged();
-                txtAddNew.setText("");
                 return true;
             }
             return false;
@@ -178,7 +201,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         if (sharedPreferences.getBoolean("atShop", false)) {
             currentShop = dbHelper.getLastShop();
             shopNameText.setText("At " + currentShop.getName());
-            shopNameButton.setText("Clear");
+            shopNameButton.setText(R.string.clear);
         }
 
         shopNameButton.setOnClickListener(view -> {
@@ -246,7 +269,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
                 geoProgress.setVisibility(View.GONE);
                 currentShop = dbHelper.getNewShop(shopName, location.getLatitude(), location.getLongitude());
                 shopNameText.setText("At " + shopName);
-                shopNameButton.setText("Clear");
+                shopNameButton.setText(R.string.clear);
                 SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean("atShop", true);
@@ -295,7 +318,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
     @Override
     public void onItemRootViewClicked(@NonNull ExpandableSection section, int itemAdapterPosition) {
         int position = adapter.getPositionInSection(itemAdapterPosition);
-            String item = section.getItem(position);
+        String item = section.getItem(position);
         if (section.getTitle().equals("Checked")) {
             String category = section.getCheckedCategory(position);
             if (!listItems.containsKey(category)) {
