@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -26,12 +27,16 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.harrydmorgan.shoppinglist.reminder.DatePicker;
+
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionAdapter;
@@ -67,9 +72,20 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         getActivity().getMenuInflater().inflate(R.menu.action_bar_menu, menu);
         menu.findItem(R.id.pageAction)
-                .setIcon(R.drawable.ic_add)
+                .setIcon(R.drawable.ic_reminder)
                 .setTitle("Set reminder");
         super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.pageAction:
+                Calendar c = Calendar.getInstance();
+                DialogFragment datePicker = new DatePicker();
+                datePicker.show(getParentFragmentManager(), "datePicker");
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

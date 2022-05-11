@@ -3,8 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.363" />
         <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/drawable/ic_arrow_up.xml" value="0.4505" />
         <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/drawable/ic_bin.xml" value="0.3725" />
+        <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/drawable/ic_calendar.xml" value="0.4575" />
+        <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/drawable/ic_launcher_background.xml" value="0.363" />
+        <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.496" />
         <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/drawable/ic_list.xml" value="0.362" />
         <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/layout/activity_collection.xml" value="0.36770833333333336" />
         <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/layout/activity_history_items.xml" value="0.36770833333333336" />
@@ -26,6 +30,8 @@
         <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/menu/history_items_menu.xml" value="0.36770833333333336" />
         <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/menu/location_menu.xml" value="0.5234375" />
         <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/menu/spinner_item.xml" value="0.36770833333333336" />
+        <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.496" />
+        <entry key="..\:/Users/harry/AndroidStudioProjects/Shoppinglist/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.496" />
       </map>
     </option>
   </component>

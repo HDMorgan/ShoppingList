@@ -19,7 +19,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "ShoppingList.db";
     private static final int DATABASE_VERSION = 1;
-    private final Context context;
 
     public static final String LIST_TABLE = "list";
     public static final String HISTORY_TABLE = "history";
@@ -31,7 +30,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public DatabaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        this.context = context;
     }
 
     @Override
@@ -72,13 +70,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public boolean addNewItem(String item, String category) {
+    public void addNewItem(String item, String category) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues newItem = new ContentValues();
         newItem.put("category", category);
         newItem.put("name", item);
-        long result = db.insert(LIST_TABLE, null, newItem);
-        return result != -1;
+        db.insert(LIST_TABLE, null, newItem);
     }
 
     public void populateListHashmap(HashMap<String, ArrayList<String>> items, ArrayList<String> checkedCategories) {
@@ -119,8 +116,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void checkItem(String item, String category, long id) {
         SQLiteDatabase db = this.getWritableDatabase();
-        item.replace("'", "\\'");
-        category.replace("'", "\\'");
+        item = item.replace("'", "''");
+        category = category.replace("'", "''");
         String query = "UPDATE list SET " +
                 "locationId = " + id +
                 " WHERE name = '" + item +
@@ -131,8 +128,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void uncheckItem(String item, String category) {
         SQLiteDatabase db = this.getWritableDatabase();
-        item.replace("'", "\\'");
-        category.replace("'", "\\'");
+        item = item.replace("'", "''");
+        category = category.replace("'", "''");
         String query = "UPDATE list SET " +
                 "locationId = NULL" +
                 " WHERE name = '" + item +
@@ -144,7 +141,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ShopLocation getNewShop(String shopName, double latitude, double longitude) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
-        shopName.replace("'", "\\'");
+        shopName = shopName.replace("'", "''");
         cv.put("name", shopName);
         cv.put("latitude", latitude);
         cv.put("longitude", longitude);
@@ -175,13 +172,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     c.getDouble(4)
             );
         }
+        c.close();
         return null;
     }
 
     public void deleteItem(String item, String category) {
         SQLiteDatabase db = this.getWritableDatabase();
-        item.replace("'", "\\'");
-        category.replace("'", "\\'");
+        item = item.replace("'", "''");
+        category = category.replace("'", "''");
         String query = "DELETE FROM list WHERE " +
                 "name = '" + item +
                 "' AND category = '" + category +
@@ -212,6 +210,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 dates.add(c.getString(0));
             } while (c.moveToNext());
         }
+        c.close();
         return dates;
     }
 
@@ -226,6 +225,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 nameResults.add(c.getString(1));
             } while (c.moveToNext());
         }
+        c.close();
     }
 
     public HashMap<String, ArrayList<String>> getItemsFromHistory(long id) {
@@ -243,6 +243,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 items.get(cat).add(c.getString(0));
             } while (c.moveToNext());
         }
+        c.close();
         return items;
     }
 
@@ -256,6 +257,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             geo[0] = c.getDouble(0);
             geo[1] = c.getDouble(1);
         }
+        c.close();
         return geo;
     }
 
@@ -269,12 +271,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 collections.add(c.getString(0));
             } while (c.moveToNext());
         }
+        c.close();
         return collections;
     }
 
     public void populateCollectionHashmap(HashMap<String, ArrayList<String>> listItems, String collectionName) {
         SQLiteDatabase db = this.getReadableDatabase();
-        collectionName.replace("'", "\\'");
+        collectionName = collectionName.replace("'", "''");
         String query = "SELECT item_name, category FROM collections " +
                 "WHERE collection_name = '" + collectionName + "';";
         Cursor c = db.rawQuery(query, null);
@@ -283,13 +286,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 listItems.get(c.getString(1)).add(c.getString(0));
             } while (c.moveToNext());
         }
+        c.close();
     }
 
     public void deleteCollectionItem(String item, String category, String collectionName) {
         SQLiteDatabase db = this.getWritableDatabase();
-        item.replace("'", "\\'");
-        category.replace("'", "\\'");
-        collectionName.replace("'", "\\'");
+        item = item.replace("'", "''");
+        category = category.replace("'", "''");
+        collectionName = collectionName.replace("'", "''");
         String query = "DELETE FROM collections WHERE " +
                 "item_name = '" + item +
                 "' AND category = '" + category +
@@ -300,7 +304,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void deleteCollection(String collectionName) {
         SQLiteDatabase db = this.getWritableDatabase();
-        collectionName.replace("'", "\\'");
+        collectionName = collectionName.replace("'", "''");
         String query = "DELETE FROM collections WHERE " +
                 "collection_name = '" + collectionName + "';";
         db.execSQL(query);
@@ -317,7 +321,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public void insertCollection(String collection) {
         SQLiteDatabase db = this.getWritableDatabase();
-        collection.replace("'", "\\'");
+        collection = collection.replace("'", "''");
         String query = "INSERT INTO list (name, category) SELECT " +
                 "c.item_name, c.category FROM collections c WHERE " +
                 "c.collection_name = '" + collection +
