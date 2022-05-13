@@ -14,12 +14,12 @@ import com.harrydmorgan.shoppinglist.R;
 
 import java.util.ArrayList;
 
-public class CollectionsAdadpter extends RecyclerView.Adapter<CollectionsAdadpter.CollectionsViewHolder> {
+public class CollectionsAdapter extends RecyclerView.Adapter<CollectionsAdapter.CollectionsViewHolder> {
     private Context context;
     private ArrayList<String> collections;
     private CollectionsListener listener;
 
-    public CollectionsAdadpter(Context context, ArrayList<String> collections, CollectionsListener listener) {
+    public CollectionsAdapter(Context context, ArrayList<String> collections, CollectionsListener listener) {
         this.context = context;
         this.collections = collections;
         this.listener = listener;

@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,7 +27,7 @@ import java.util.ArrayList;
 
 public class CollectionsFragment extends Fragment {
     ArrayList<String> collections;
-    CollectionsAdadpter adapter;
+    CollectionsAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -89,7 +88,7 @@ public class CollectionsFragment extends Fragment {
 
         //Creating recyclerview
         RecyclerView recyclerView = view.findViewById(R.id.collectionsRecycler);
-        adapter = new CollectionsAdadpter(getContext(), collections, new CollectionsAdadpter.CollectionsListener() {
+        adapter = new CollectionsAdapter(getContext(), collections, new CollectionsAdapter.CollectionsListener() {
             //Recyclerview click listeners
             @Override
             public void onRootClick(int position) {
