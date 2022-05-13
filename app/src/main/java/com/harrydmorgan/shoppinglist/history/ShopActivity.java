@@ -27,7 +27,7 @@ public class ShopActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.shop_name_recycler);
         String date = getIntent().getStringExtra("date");
 
-
+        //Getting shops and their ids
         ArrayList<String> shops = new ArrayList<>();
         ArrayList<Long> ids = new ArrayList<>();
         db.getShopNames(date, shops, ids);

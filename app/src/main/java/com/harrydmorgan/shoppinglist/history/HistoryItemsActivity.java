@@ -41,6 +41,7 @@ public class HistoryItemsActivity extends AppCompatActivity implements Expandabl
         DatabaseHelper dbHelper = new DatabaseHelper(this);
         HashMap<String, ArrayList<String>> items = new HashMap<>();
 
+        //Getting items for the selected shop
         Cursor c = getContentResolver().query(HistoryProvider.CONTENT_URI,
                 new String[] {"name", "category"},
                 "locationId = ?",
@@ -57,6 +58,7 @@ public class HistoryItemsActivity extends AppCompatActivity implements Expandabl
         }
         c.close();
 
+        //Getting shop location
         geo = dbHelper.getGeo(id);
 
         for (String i : items.keySet()) {
@@ -91,6 +93,7 @@ public class HistoryItemsActivity extends AppCompatActivity implements Expandabl
             onBackPressed();
             return true;
         }
+        //Opening shop location in maps
         if (itemId == R.id.pageAction) {
             Uri uri = Uri.parse("geo:0,0?q=" + geo[0] + "," + geo[1]);
             Intent geoIntent = new Intent(Intent.ACTION_VIEW, uri);
@@ -106,6 +109,7 @@ public class HistoryItemsActivity extends AppCompatActivity implements Expandabl
         return super.onOptionsItemSelected(item);
     }
 
+    //Collapsing and expanding sections
     @Override
     public void onHeaderRootViewClicked(@NonNull ExpandableSection section) {
         final SectionAdapter sectionAdapter = adapter.getAdapterForSection(section);

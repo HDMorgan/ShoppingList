@@ -35,6 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        //Creating tables
         String locationsTable = "CREATE TABLE locations (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "name TEXT," +
@@ -79,6 +80,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(LIST_TABLE, null, newItem);
     }
 
+    //Populating the hashmap and checked arraylist for the main list
     public void populateListHashmap(HashMap<String, ArrayList<String>> items, ArrayList<String> checkedCategories) {
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor c = db.rawQuery("SELECT * FROM list;", null);
@@ -96,6 +98,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         c.close();
     }
 
+    //Get categories from given table
     public ArrayList<String> getCategories(String table, boolean requireMain) {
         ArrayList<String> categories = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -115,6 +118,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return categories;
     }
 
+    //Check an item
     public void checkItem(String item, String category, long id) {
         SQLiteDatabase db = this.getWritableDatabase();
         item = item.replace("'", "''");
@@ -127,6 +131,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
+    //Uncheck an item
     public void uncheckItem(String item, String category) {
         SQLiteDatabase db = this.getWritableDatabase();
         item = item.replace("'", "''");
@@ -139,6 +144,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
+    //Saving a new shop and returning its id
     public ShopLocation getNewShop(String shopName, double latitude, double longitude) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
@@ -152,6 +158,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return new ShopLocation(id, shopName, c, latitude, longitude);
     }
 
+    //Get the last shop the user was at
     public ShopLocation getLastShop() {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM locations " +
@@ -177,6 +184,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    //Delete an item
     public void deleteItem(String item, String category) {
         SQLiteDatabase db = this.getWritableDatabase();
         item = item.replace("'", "''");
@@ -188,6 +196,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
+    //Save items to history and clear main list
     public void saveItems() {
         SQLiteDatabase db = this.getWritableDatabase();
         String recordItems = "INSERT INTO history " +
@@ -200,6 +209,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(clearItems);
     }
 
+    //Get dates from locations
     public ArrayList<String> getHistoryDates() {
         ArrayList<String> dates = new ArrayList<>();
         SQLiteDatabase db = this.getWritableDatabase();
@@ -215,6 +225,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return dates;
     }
 
+    //Get names of shops for a given date
     public void getShopNames(String date, ArrayList<String> nameResults, ArrayList<Long> idResults) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT id, name FROM locations " +
@@ -229,7 +240,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         c.close();
     }
 
-
+    //Getting the location of a shop
     public double[] getGeo(long id) {
         SQLiteDatabase db = this.getReadableDatabase();
         double[] geo = new double[2];
@@ -244,6 +255,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return geo;
     }
 
+    //Get the saved collections
     public ArrayList<String> getCollections() {
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<String> collections = new ArrayList<>();
@@ -258,6 +270,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return collections;
     }
 
+    //populate the hashmap for a collection
     public void populateCollectionHashmap(HashMap<String, ArrayList<String>> listItems, String collectionName) {
         SQLiteDatabase db = this.getReadableDatabase();
         collectionName = collectionName.replace("'", "''");
@@ -272,6 +285,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         c.close();
     }
 
+    //Delete an item in a collection
     public void deleteCollectionItem(String item, String category, String collectionName) {
         SQLiteDatabase db = this.getWritableDatabase();
         item = item.replace("'", "''");
@@ -284,7 +298,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
-
+    //Delete a whole collection
     public void deleteCollection(String collectionName) {
         SQLiteDatabase db = this.getWritableDatabase();
         collectionName = collectionName.replace("'", "''");
@@ -293,6 +307,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
+    //Add an item to a collection
     public void addCollectionItem(String item, String category, String collection) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues newItem = new ContentValues();
@@ -302,6 +317,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(COLLECTIONS_TABLE, null, newItem);
     }
 
+    //Insert a collection's items into the main list
     public void insertCollection(String collection) {
         SQLiteDatabase db = this.getWritableDatabase();
         collection = collection.replace("'", "''");
@@ -313,6 +329,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
+    //Delete a shop if it is cleared with no items checked
     public void removeShopIfEmpty(long id) {
         SQLiteDatabase db = this.getWritableDatabase();
         String listQuery = "(SELECT locationId FROM list WHERE locationId NOT NULL)";
@@ -324,7 +341,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(query);
     }
 
-    public void clearOldHistroy() {
+    //Removing old records from history - over 3 months
+    public void clearOldHistory() {
         SQLiteDatabase db = this.getWritableDatabase();
         String query = "DELETE FROM locations WHERE " +
                 "julianday('now') - julianday(date) > 90;";

@@ -43,6 +43,7 @@ public class CollectionActivity extends AppCompatActivity implements ExpandableS
     private ArrayAdapter<String> spinnerAdapter;
     private String collectionName;
 
+    //Inflating action bar
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.action_bar_menu, menu);
@@ -52,27 +53,40 @@ public class CollectionActivity extends AppCompatActivity implements ExpandableS
         return super.onCreateOptionsMenu(menu);
     }
 
+    //Handling action bar buttons
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            case R.id.pageAction:
-                new AlertDialog.Builder(this)
-                        .setTitle("Are you sure you want to delete this collection?")
-                        .setPositiveButton("Yes", (dialogInterface, i) -> {
-                            DatabaseHelper dbHelper = new DatabaseHelper(this);
-                            dbHelper.deleteCollection(collectionName);
-                            onBackPressed();
-                        })
-                        .setNegativeButton("No", null)
-                        .show();
-            case R.id.help:
-                Intent intent = new Intent(this, AppHelp.class);
-                intent.putExtra("url", "collections.html#edit");
-                startActivity(intent);
+        int itemId = item.getItemId();
+        // Respond to the action bar's Up/Home button
+        if (itemId == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        //Clean button
+        if (itemId == R.id.pageAction) {
+            //Confirmation dialog
+            new AlertDialog.Builder(this)
+                    .setTitle("Are you sure you want to delete this collection?")
+                    .setPositiveButton("Yes", (dialogInterface, i) -> {
+                        //Deleting collection
+                        DatabaseHelper dbHelper = new DatabaseHelper(this);
+                        dbHelper.deleteCollection(collectionName);
+                        onBackPressed();
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+
+            Intent intent = new Intent(this, AppHelp.class);
+            intent.putExtra("url", "collections.html#edit");
+            startActivity(intent);
+            return true;
+        }
+        //Help button
+        if (itemId == R.id.help) {
+            Intent intent = new Intent(this, AppHelp.class);
+            intent.putExtra("url", "collections.html#edit");
+            startActivity(intent);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -86,7 +100,7 @@ public class CollectionActivity extends AppCompatActivity implements ExpandableS
 
         listItems = new HashMap<>();
 
-
+        //Getting collection item categories
         DatabaseHelper dbHelper = new DatabaseHelper(this);
         if (getIntent().getBooleanExtra("new", false)) {
             categories = new ArrayList<>();
@@ -95,11 +109,13 @@ public class CollectionActivity extends AppCompatActivity implements ExpandableS
             categories = dbHelper.getCategories(DatabaseHelper.COLLECTIONS_TABLE, false);
         }
 
+        //adding categories to hashmap
         adapter = new SectionedRecyclerViewAdapter();
         for (String i : categories) {
             listItems.put(i, new ArrayList<>());
         }
 
+        //Creating the category spinner
         categorySpinner = findViewById(R.id.category_spinner);
         categories.add("Add new...");
         spinnerAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, categories);
@@ -109,9 +125,10 @@ public class CollectionActivity extends AppCompatActivity implements ExpandableS
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (categorySpinner.getSelectedItem().toString().equals("Add new...")) {
                     TextDialog dialog = new TextDialog("Add category", new TextDialog.TextDialogListener() {
+                        //Adding a new category
                         @Override
                         public void setAction(String textEntered) {
-                            if (textEntered.equals("")) {
+                            if (textEntered.equals("") || textEntered.equals("Checked")) {
                                 categorySpinner.setSelection(0);
                                 return;
                             }
@@ -139,6 +156,7 @@ public class CollectionActivity extends AppCompatActivity implements ExpandableS
         RecyclerView recyclerView = findViewById(R.id.rec_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        //Getting list items
         dbHelper.populateCollectionHashmap(listItems, collectionName);
 
         //Populating recyclerview
@@ -148,6 +166,7 @@ public class CollectionActivity extends AppCompatActivity implements ExpandableS
 
         recyclerView.setAdapter(adapter);
 
+        //Swipe to delete functionality
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -164,6 +183,7 @@ public class CollectionActivity extends AppCompatActivity implements ExpandableS
                 adapter.notifyItemRemoved(position);
             }
 
+            //Setting only items to be swipable
             @Override
             public int getSwipeDirs(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
                 boolean notSwipeable = viewHolder instanceof ExpandableSection.HeaderViewHolder ||
@@ -177,8 +197,10 @@ public class CollectionActivity extends AppCompatActivity implements ExpandableS
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
+        //Add item text box
         EditText txtAddNew = (EditText) findViewById(R.id.txtNewItem);
         txtAddNew.setOnEditorActionListener((textView, i, keyEvent) -> {
+            //Adding the item
             if (i == EditorInfo.IME_ACTION_NEXT) {
                 String category = categorySpinner.getSelectedItem().toString();
                 String item = txtAddNew.getText().toString();
@@ -194,12 +216,14 @@ public class CollectionActivity extends AppCompatActivity implements ExpandableS
             return false;
         });
 
+        //Showing back button
         ActionBar ab = getSupportActionBar();
         assert ab != null;
         ab.setTitle(collectionName);
         ab.setDisplayHomeAsUpEnabled(true);
     }
 
+    //Adding a category
     private void addItemCategory(String title) {
         listItems.put(title, new ArrayList<>());
         int sectionIndex = adapter.getSectionCount();
@@ -214,6 +238,7 @@ public class CollectionActivity extends AppCompatActivity implements ExpandableS
         categorySpinner.setSelection(sectionIndex);
     }
 
+    //Collapsing and expanding sections
     @Override
     public void onHeaderRootViewClicked(@NonNull ExpandableSection section) {
         final SectionAdapter sectionAdapter = adapter.getAdapterForSection(section);

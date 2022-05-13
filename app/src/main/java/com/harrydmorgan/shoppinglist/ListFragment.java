@@ -69,6 +69,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         setHasOptionsMenu(true);
     }
 
+    //Inflating action bar
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         getActivity().getMenuInflater().inflate(R.menu.action_bar_menu, menu);
@@ -78,6 +79,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         super.onPrepareOptionsMenu(menu);
     }
 
+    //Handling action bar buttons
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
@@ -96,6 +98,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         return super.onOptionsItemSelected(item);
     }
 
+    //Validating current shop on fragment resume
     @Override
     public void onResume() {
         if (currentShop != null) {
@@ -117,12 +120,14 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
 
         categories = dbHelper.getCategories(DatabaseHelper.LIST_TABLE, true);
 
+        //setting up hashmap
         adapter = new SectionedRecyclerViewAdapter();
         for (String i : categories) {
             listItems.put(i, new ArrayList<>());
         }
         listItems.put("Checked", new ArrayList<>());
 
+        //Creating category spinner
         categorySpinner = view.findViewById(R.id.category_spinner);
         categories.add("Add new...");
         spinnerAdapter = new ArrayAdapter<>(view.getContext(), R.layout.spinner_item, categories);
@@ -132,9 +137,10 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (categorySpinner.getSelectedItem().toString().equals("Add new...")) {
                     TextDialog dialog = new TextDialog("Add category", new TextDialog.TextDialogListener() {
+                        //Creating a new category
                         @Override
                         public void setAction(String textEntered) {
-                            if (textEntered.equals("")) {
+                            if (textEntered.equals("") || textEntered.equals("Checked")) {
                                 categorySpinner.setSelection(0);
                                 return;
                             }
@@ -177,6 +183,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         adapter.addSection(checkedSection);
         recyclerView.setAdapter(adapter);
 
+        //Swipe to delete functionality
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -193,6 +200,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
                 adapter.notifyItemRemoved(position);
             }
 
+            //Setting only items to be swipable
             @Override
             public int getSwipeDirs(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
                 boolean notSwipeable = viewHolder instanceof ExpandableSection.HeaderViewHolder ||
@@ -206,8 +214,10 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
+        //Add item text box
         EditText txtAddNew = (EditText) view.findViewById(R.id.txtNewItem);
         txtAddNew.setOnEditorActionListener((textView, i, keyEvent) -> {
+            //Adding an item
             if (i == EditorInfo.IME_ACTION_NEXT) {
                 String category = categorySpinner.getSelectedItem().toString();
                 String item = txtAddNew.getText().toString();
@@ -230,14 +240,18 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         SharedPreferences sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
+        //Setting the shop if it has not yet been cleared
         if (sharedPreferences.getBoolean("atShop", false)) {
             currentShop = dbHelper.getLastShop();
             shopNameText.setText("At " + currentShop.getName());
             shopNameButton.setText(R.string.clear);
         }
 
+        //Shop management click
         shopNameButton.setOnClickListener(view -> {
+            //Action if no shop
             if (currentShop == null) {
+                //Check permissions
                 if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     new AlertDialog.Builder(getContext())
                             .setTitle("Permission error")
@@ -262,6 +276,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
                 });
                 shopDialog.show(getParentFragmentManager(), "tag");
             } else {
+                //action if shop set
                 clearShop(false);
             }
         });
@@ -283,6 +298,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
                     .show();
         }
 
+        //Criteria for getting location
         criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_COARSE);
         criteria.setPowerRequirement(Criteria.POWER_LOW);
@@ -296,12 +312,14 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         return view;
     }
 
+    //Setting a shop
     private void setLocation(String shopName) {
 
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         final LocationListener locationListener = location -> {
+            //Setting shop and saving to db
             geoProgress.setVisibility(View.GONE);
             currentShop = dbHelper.getNewShop(shopName, location.getLatitude(), location.getLongitude());
             shopNameText.setText("At " + shopName);
@@ -317,6 +335,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         locationManager.requestSingleUpdate(criteria, locationListener, null);
     }
 
+    //Checking if the user is still at the shop
     private void validateCurrentShop() {
         if (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) != currentShop.getDay()) {
             clearShop(true);
@@ -340,6 +359,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
 
     }
 
+    //Clearing the current shop
     public void clearShop(boolean showMessage) {
         SharedPreferences sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -351,6 +371,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         editor.putBoolean("atShop", false);
         editor.apply();
 
+        //Showing a message if auto cleared
         if (showMessage) {
             new AlertDialog.Builder(getContext())
                     .setTitle("Looks like you're no longer at " + shopName)
@@ -360,6 +381,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         }
     }
 
+    //Collapsing and expanding sections
     @Override
     public void onHeaderRootViewClicked(@NonNull ExpandableSection section) {
         final SectionAdapter sectionAdapter = adapter.getAdapterForSection(section);
@@ -378,10 +400,12 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         }
     }
 
+    //Item click listener
     @Override
     public void onItemRootViewClicked(@NonNull ExpandableSection section, int itemAdapterPosition) {
         int position = adapter.getPositionInSection(itemAdapterPosition);
         String item = section.getItem(position);
+        //Action if item is checked
         if (section.getTitle().equals("Checked")) {
             String category = section.getCheckedCategory(position);
             if (!listItems.containsKey(category)) {
@@ -393,6 +417,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
             adapter.notifyItemRemoved(itemAdapterPosition);
             adapter.notifyDataSetChanged();
         } else {
+            //Action if unchecked
             long id;
             if (currentShop != null) {
                 id = currentShop.getId();
@@ -406,10 +431,11 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
             adapter.notifyItemRemoved(itemAdapterPosition);
             adapter.notifyItemInserted(adapter.getItemCount() - 1);
         }
-//
+
         return;
     }
 
+    //Clearing the checked items
     @Override
     public void clearButtonClicked() {
         int sectionSize = listItems.get("Checked").size();
@@ -420,6 +446,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         dbHelper.saveItems();
     }
 
+    //Adding a category
     private void addItemCategory(String title) {
         listItems.put(title, new ArrayList<>());
         int sectionIndex = adapter.getSectionCount() - 1;

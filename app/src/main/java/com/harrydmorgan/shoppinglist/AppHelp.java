@@ -18,6 +18,7 @@ public class AppHelp extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_help);
 
+        //Opening webpage from intent
         wv = findViewById(R.id.webView);
         wv.setWebViewClient(new WebViewClient());
         wv.getSettings().setJavaScriptEnabled(true);
@@ -39,6 +40,7 @@ public class AppHelp extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //Handling back action for webview
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
 

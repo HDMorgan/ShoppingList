@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         createNotificationChannel();
 
+        //Requesting location permissions
         ActivityResultLauncher<String[]> locationPermissionRequest =
                 registerForActivityResult(new ActivityResultContracts
                         .RequestMultiplePermissions(), result -> {
@@ -49,9 +50,11 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_COARSE_LOCATION
         });
 
-        bottomNav = binding.bottomNavigation;
-
+        //Forcing light theme
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
+        //Setting up bottom navigation
+        bottomNav = binding.bottomNavigation;
 
         NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainerView);
         navController = navHostFragment.getNavController();
@@ -66,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, barConfiguration);
     }
 
+    //Creating a notification channel for the app
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void createNotificationChannel() {
         String name = "Reminders";

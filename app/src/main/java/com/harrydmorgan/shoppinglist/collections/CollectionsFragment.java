@@ -36,6 +36,7 @@ public class CollectionsFragment extends Fragment {
         setHasOptionsMenu(true);
     }
 
+    //Inflating action bar
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         getActivity().getMenuInflater().inflate(R.menu.action_bar_menu, menu);
@@ -45,11 +46,13 @@ public class CollectionsFragment extends Fragment {
         super.onPrepareOptionsMenu(menu);
     }
 
+    //Handing action bar buttons
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.pageAction) {
             TextDialog dialog = new TextDialog("Add collection", new TextDialog.TextDialogListener() {
+                //Creating a collection
                 @Override
                 public void setAction(String textEntered) {
                     if (textEntered.equals("") || collections.contains(textEntered)) {
@@ -84,9 +87,10 @@ public class CollectionsFragment extends Fragment {
 
         collections = new ArrayList<>();
 
-
+        //Creating recyclerview
         RecyclerView recyclerView = view.findViewById(R.id.collectionsRecycler);
         adapter = new CollectionsAdadpter(getContext(), collections, new CollectionsAdadpter.CollectionsListener() {
+            //Recyclerview click listeners
             @Override
             public void onRootClick(int position) {
                 Intent intent = new Intent(getContext(), CollectionActivity.class);
@@ -108,6 +112,7 @@ public class CollectionsFragment extends Fragment {
         return view;
     }
 
+    //Updating list on resume
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onResume() {
