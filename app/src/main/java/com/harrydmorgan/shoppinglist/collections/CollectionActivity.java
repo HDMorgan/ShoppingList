@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.harrydmorgan.shoppinglist.AppHelp;
 import com.harrydmorgan.shoppinglist.DatabaseHelper;
 import com.harrydmorgan.shoppinglist.ExpandableSection;
 import com.harrydmorgan.shoppinglist.R;
@@ -68,6 +69,10 @@ public class CollectionActivity extends AppCompatActivity implements ExpandableS
                         })
                         .setNegativeButton("No", null)
                         .show();
+            case R.id.help:
+                Intent intent = new Intent(this, AppHelp.class);
+                intent.putExtra("url", "collections.html#edit");
+                startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
     }

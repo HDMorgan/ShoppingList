@@ -1,6 +1,7 @@
 package com.harrydmorgan.shoppinglist.history;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,8 +13,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.harrydmorgan.shoppinglist.AppHelp;
 import com.harrydmorgan.shoppinglist.DatabaseHelper;
 import com.harrydmorgan.shoppinglist.ExpandableSection;
+import com.harrydmorgan.shoppinglist.HistoryProvider;
 import com.harrydmorgan.shoppinglist.R;
 
 import java.util.ArrayList;
@@ -36,8 +39,23 @@ public class HistoryItemsActivity extends AppCompatActivity implements Expandabl
         long id = getIntent().getLongExtra("shop", 0);
 
         DatabaseHelper dbHelper = new DatabaseHelper(this);
-        HashMap<String, ArrayList<String>> items;
-        items = dbHelper.getItemsFromHistory(id);
+        HashMap<String, ArrayList<String>> items = new HashMap<>();
+
+        Cursor c = getContentResolver().query(HistoryProvider.CONTENT_URI,
+                new String[] {"name", "category"},
+                "locationId = ?",
+                new String[] {Long.toString(id)},
+                null);
+        if (c.moveToFirst()) {
+            do {
+                String cat = c.getString(1);
+                if (!items.containsKey(cat)) {
+                    items.put(cat, new ArrayList<>());
+                }
+                items.get(cat).add(c.getString(0));
+            } while (c.moveToNext());
+        }
+        c.close();
 
         geo = dbHelper.getGeo(id);
 
@@ -68,15 +86,22 @@ public class HistoryItemsActivity extends AppCompatActivity implements Expandabl
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            case R.id.pageAction:
-                Uri uri = Uri.parse("geo:0,0?q=" + geo[0] + "," + geo[1]);
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(intent);
+        int itemId = item.getItemId();// Respond to the action bar's Up/Home button
+        if (itemId == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        if (itemId == R.id.pageAction) {
+            Uri uri = Uri.parse("geo:0,0?q=" + geo[0] + "," + geo[1]);
+            Intent geoIntent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(geoIntent);
+            return true;
+        }
+        if (itemId == R.id.help) {
+            Intent intent = new Intent(this, AppHelp.class);
+            intent.putExtra("url", "history.html#location");
+            startActivity(intent);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

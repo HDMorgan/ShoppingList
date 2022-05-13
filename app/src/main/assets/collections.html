@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/7f1cdbcaca.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        /* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
+        function openNavbar() {
+            var x = document.getElementById("myTopnav");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+            } else {
+                x.className = "topnav";
+            }
+        } 
+    </script>
+</head>
+
+<body>
+    <div class="topnav" id="myTopnav">
+        <a href="list.html">Main list</a>
+        <a href="collections.html" class="active">Collections</a>
+        <a href="history.html">History</a>
+        <a href="javascript:void(0);" class="icon" onclick="openNavbar()">
+            <i class="fa fa-bars"></i>
+        </a>
+    </div>
+    <div class="main">
+        <div class="contents">
+            <h3>In this page</h3>
+            <a href="#overview">Overview</a><br />
+            <a href="#create">Creating a collection</a><br />
+            <a href="#add">Adding to the main list</a><br />
+            <a href="#edit">Editing a collection</a><br />
+        </div>
+
+
+        <div class="helpContainer">
+            <h2 id="overview">Overview</h2>
+            <div class="description">Collections are collections of items that can be added to your main list. For
+                example, your weekly shopping
+            </div>
+            <hr class="altHr" />
+
+            <h2 id="create">Creating a collection</h2>
+            <hr />
+            <div class="item">
+                <div class="description">
+                    <p>Press the plus button in the action bar to create a new collection</p>
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+            </div>
+            <hr class="altHr" />
+
+
+            <h2 id="add">Adding to the main list</h2>
+            <hr />
+            <div class="item">
+                <div class="description">
+                    <p>Press the plus symbol on a collection to add it's items to your main list</p>
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+            </div>
+            <hr class="altHr" />
+
+
+            <h2 id="edit">Editing a collection</h2>
+            <hr />
+            <div class="item">
+                <div class="description">
+                    <p>Click on a collection to edit it. Editing items works exactly the same as the main list <br />
+                    See: <a href="list.html">Main list</a></p>
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+            </div>
+            <hr>
+            <div class="item">
+                <div class="description">
+                    <p>Delete the collection by pressing the bin icon in the action bar <br />
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</body>
+
+</html>

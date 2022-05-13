@@ -1,0 +1,233 @@
+:root {
+    --primary: #222831;
+    --secondary: #393E46;
+    --accent: #00ADB5;
+    --background: #EEEEEE;
+}
+
+
+* {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1em;
+    scroll-behavior: smooth;
+    margin: 0;
+}
+
+i {
+    font-size: 1em;
+}
+
+hr {
+    color: var(--accent);
+    margin: 1em auto;
+    width: 50%;
+    border:solid 1px;
+}
+
+.altHr {
+    margin: 1em;
+    color: var(--secondary);
+    width: auto;
+}
+
+.main {
+    display: grid;
+    grid-template-columns: 1fr minmax(0px, 600px) 1fr;
+    margin: 0;
+    width: 100%;
+    padding: 2em 0;
+}
+
+.contents {
+    padding-left: 0.5em;
+    padding-top: 0.5em;
+    grid-column: 3;
+    grid-row: 1;
+}
+
+.contents h3 {
+    color: var(--accent);
+    font-size: 1.1em;
+    margin-bottom: 0.5em;
+}
+
+.contents a {
+    margin-left: 2em;
+    margin-bottom: 0.5em;
+    cursor: pointer;
+    display: inline-block;
+    color: black;
+    text-decoration: none;
+}
+
+
+.contents a:hover {
+    color: var(--accent)
+}
+
+.helpContainer {
+    padding: 2em;
+    grid-row: 1;
+    grid-column: 2;
+    border: 1px solid var(--secondary);
+    border-radius: 0.5em;
+}
+
+.helpContainer h2 {
+    color: var(--accent);
+    font-size: 1.3em;
+}
+
+.item {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+
+.description {
+    grid-row: 1;
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 1em;
+}
+
+.description span {
+    font-style: italic;
+}
+
+.image {
+    grid-row: 1;
+    grid-column: 2;
+}
+
+.image img {
+    object-fit: cover;
+    width: 100%;
+    max-height: 100%;
+}
+
+.note {
+    border: solid var(--accent) 1px;
+    border-radius: 0.2em;
+    color: var(--sec);
+    grid-row: 2;
+    grid-column: 1 / span 2;
+    padding: 1em;
+    margin: 1em;
+    font-size: 0.7em;
+}
+
+.note span {
+    font-weight: bold;
+}
+
+.topnav {
+    background-color: var(--primary);
+    overflow: hidden;
+}
+
+
+.topnav a {
+    float: left;
+    display: block;
+    color: var(--background);
+    text-align: center;
+    padding: 0.8em 1em;
+    text-decoration: none;
+}
+
+.topnav a:hover {
+    background-color: var(--accent);
+    color: var(--primary);
+}
+
+.topnav a.active {
+    background-color: var(--accent);
+    color: black;
+}
+
+.topnav .icon {
+    display: none;
+}
+
+@media screen and (max-width: 900px) {
+    .helpContainer {
+
+        border: none;
+        border-radius: 0;
+        border-top: solid black 1px;
+    }
+
+    .main {
+        display: block;
+    }
+
+    .contents {
+        margin-left: 3em;
+        margin-bottom: 2em;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .topnav a:not(.active) {
+        display: none;
+    }
+
+    .topnav a.icon {
+        float: right;
+        display: block;
+    }
+
+
+    .topnav.responsive {
+        position: relative;
+    }
+
+    .topnav.responsive a.icon {
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+
+    .topnav.responsive a {
+        float: none;
+        display: block;
+        text-align: left;
+    }
+
+    .topnav a.active {
+        background-color: var(--primary);
+        color: var(--background);
+        display: inline-block;
+    }
+
+
+}
+
+@media screen and (max-width: 500px) {
+    .item {
+        display: block;
+    }
+
+    .item .description {
+        margin-bottom: 1em;
+    }
+
+    .contents a{
+        margin-left: 0;
+    }
+
+    * {
+        font-size: 1.1em;
+    }
+
+    .topnav {
+        font-size: 1.1em;
+    }
+
+    .helpContainer h2 {
+        font-size: 1.3em;
+    }
+}

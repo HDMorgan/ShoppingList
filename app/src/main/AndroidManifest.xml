@@ -5,8 +5,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-
-
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application
@@ -16,9 +14,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShoppingList">
+        <activity
+            android:name=".AppHelp"
+            android:exported="false" />
+
         <receiver
             android:name=".reminder.NotificationReceiver"
             android:enabled="true" />
+
+        <provider
+            android:name=".HistoryProvider"
+            android:authorities="com.harrydmorgan.shoppinglist"
+            android:exported="true"
+            android:grantUriPermissions="true" />
+
         <activity
             android:name=".collections.CollectionActivity"
             android:exported="false" />
@@ -39,6 +48,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

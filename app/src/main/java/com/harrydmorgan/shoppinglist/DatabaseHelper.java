@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -141,14 +142,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public ShopLocation getNewShop(String shopName, double latitude, double longitude) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
+        Calendar c = Calendar.getInstance();
         shopName = shopName.replace("'", "''");
         cv.put("name", shopName);
         cv.put("latitude", latitude);
         cv.put("longitude", longitude);
-        Date currentDate = new Date();
-        cv.put("date", sdf.format(currentDate));
+        cv.put("date", sdf.format(c.getTime()));
         long id = db.insert("locations", null, cv);
-        return new ShopLocation(id, shopName, currentDate, latitude, longitude);
+        return new ShopLocation(id, shopName, c, latitude, longitude);
     }
 
     public ShopLocation getLastShop() {
@@ -158,16 +159,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "LIMIT 1;";
         Cursor c = db.rawQuery(query, null);
         if (c.moveToFirst()) {
-            Date date = null;
+            Calendar calendar = Calendar.getInstance();
             try {
-                date = sdf.parse(c.getString(2));
+                calendar.setTime(sdf.parse(c.getString(2)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
             return new ShopLocation(
                     c.getLong(0),
                     c.getString(1),
-                    date,
+                    calendar,
                     c.getDouble(3),
                     c.getDouble(4)
             );
@@ -228,24 +229,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         c.close();
     }
 
-    public HashMap<String, ArrayList<String>> getItemsFromHistory(long id) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        HashMap<String, ArrayList<String>> items = new HashMap<>();
-        String query = "SELECT name, category FROM history " +
-                "WHERE locationId = " + id + ";";
-        Cursor c = db.rawQuery(query, null);
-        if (c.moveToFirst()) {
-            do {
-                String cat = c.getString(1);
-                if (!items.containsKey(cat)) {
-                    items.put(cat, new ArrayList<>());
-                }
-                items.get(cat).add(c.getString(0));
-            } while (c.moveToNext());
-        }
-        c.close();
-        return items;
-    }
 
     public double[] getGeo(long id) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -327,6 +310,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "c.collection_name = '" + collection +
                 "' AND c.item_name NOT IN (SELECT l.name FROM list l WHERE l.category = c.category " +
                 "AND locationId IS NULL);";
+        db.execSQL(query);
+    }
+
+    public void removeShopIfEmpty(long id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String listQuery = "(SELECT locationId FROM list WHERE locationId NOT NULL)";
+        String historyQuery = "(SELECT locationId FROM history)";
+        String query = "DELETE FROM locations WHERE " +
+                "id = " + id + " AND " +
+                "id NOT IN " + listQuery + " AND " +
+                "id NOT IN " + historyQuery + ";";
+        db.execSQL(query);
+    }
+
+    public void clearOldHistroy() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String query = "DELETE FROM locations WHERE " +
+                "julianday('now') - julianday(date) > 90;";
         db.execSQL(query);
     }
 }

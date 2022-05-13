@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/7f1cdbcaca.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        /* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
+        function openNavbar() {
+            var x = document.getElementById("myTopnav");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+            } else {
+                x.className = "topnav";
+            }
+        } 
+    </script>
+</head>
+
+<body>
+    <div class="topnav" id="myTopnav">
+        <a href="list.html">Navigation</a>
+        <a href="collections.html" >Collections</a>
+        <a href="history.html" class="active">History</a>
+        <a href="javascript:void(0);" class="icon" onclick="openNavbar()">
+            <i class="fa fa-bars"></i>
+        </a>
+    </div>
+    <div class="main">
+        <div class="contents">
+            <h3>In this page</h3>
+            <a href="#navigation">Navigation</a><br />
+            <a href="#clear">Clearing old data</a><br />
+            <a href="#location">Opening the location of a shop</a><br />
+        </div>
+
+
+        <div class="helpContainer">
+            <h2 id="navigation">Navigation</h2>
+            <hr />
+            <div class="item">
+                <div class="description">
+                    <p>Select a date to show the shops visisted on that day</p>
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+            </div>
+            <hr />
+            <div class="item">
+                <div class="description">
+                    <p>Select a shop to show the items checked off in that shop</p>
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+            </div>
+            <hr class="altHr" />
+
+
+            <h2 id="clear">Clearing old date</h2>
+            <hr />
+            <div class="item">
+                <div class="description">
+                    <p>Press the clear old data button in the navigation bar to remove shops older than 3 months</p>
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+            </div>
+            <hr class="altHr" />
+
+
+            <h2 id="location">Opening the location of a shop</h2>
+            <hr />
+            <div class="item">
+                <div class="description">
+                    <p>Press the location pin in the action bar of a shop to open its location in maps</p>
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</body>
+
+</html>

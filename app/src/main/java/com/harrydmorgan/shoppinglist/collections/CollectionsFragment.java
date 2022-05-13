@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.harrydmorgan.shoppinglist.AppHelp;
 import com.harrydmorgan.shoppinglist.DatabaseHelper;
 import com.harrydmorgan.shoppinglist.R;
 import com.harrydmorgan.shoppinglist.TextDialog;
@@ -46,25 +47,32 @@ public class CollectionsFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.pageAction:
-                TextDialog dialog = new TextDialog("Add collection", new TextDialog.TextDialogListener() {
-                    @Override
-                    public void setAction(String textEntered) {
-                        if (textEntered.equals("") || collections.contains(textEntered)) {
-                            return;
-                        }
-                        Intent intent = new Intent(getContext(), CollectionActivity.class);
-                        intent.putExtra("collection", textEntered);
-                        intent.putExtra("new", true);
-                        startActivity(intent);
+        int itemId = item.getItemId();
+        if (itemId == R.id.pageAction) {
+            TextDialog dialog = new TextDialog("Add collection", new TextDialog.TextDialogListener() {
+                @Override
+                public void setAction(String textEntered) {
+                    if (textEntered.equals("") || collections.contains(textEntered)) {
+                        return;
                     }
+                    Intent intent = new Intent(getContext(), CollectionActivity.class);
+                    intent.putExtra("collection", textEntered);
+                    intent.putExtra("new", true);
+                    startActivity(intent);
+                }
 
-                    @Override
-                    public void cancelAction() {}
-                });
-                dialog.show(getParentFragmentManager(), "Add collection");
-                return true;
+                @Override
+                public void cancelAction() {
+                }
+            });
+            dialog.show(getParentFragmentManager(), "Add collection");
+            return true;
+        }
+        if (itemId == R.id.help) {
+            Intent intent = new Intent(getContext(), AppHelp.class);
+            intent.putExtra("url", "collections.html");
+            startActivity(intent);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

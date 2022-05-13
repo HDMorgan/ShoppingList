@@ -3,10 +3,10 @@ package com.harrydmorgan.shoppinglist;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
-import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -56,6 +56,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
     private ProgressBar geoProgress;
     private ArrayList<String> categories;
     private ArrayAdapter<String> spinnerAdapter;
+    private Criteria criteria;
 
 
     public ListFragment() {
@@ -79,13 +80,28 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.pageAction:
-                Calendar c = Calendar.getInstance();
-                DialogFragment datePicker = new DatePicker();
-                datePicker.show(getParentFragmentManager(), "datePicker");
+        int itemId = item.getItemId();
+        if (itemId == R.id.pageAction) {
+            Calendar c = Calendar.getInstance();
+            DialogFragment datePicker = new DatePicker();
+            datePicker.show(getParentFragmentManager(), "datePicker");
+            return true;
+        }
+        if (itemId == R.id.help) {
+            Intent intent = new Intent(getContext(), AppHelp.class);
+            intent.putExtra("url", "list.html");
+            startActivity(intent);
+            return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onResume() {
+        if (currentShop != null) {
+            validateCurrentShop();
+        }
+        super.onResume();
     }
 
     @Override
@@ -211,7 +227,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         shopNameButton = view.findViewById(R.id.shop_name_button);
         geoProgress = view.findViewById(R.id.geoProgress);
 
-        SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         if (sharedPreferences.getBoolean("atShop", false)) {
@@ -246,11 +262,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
                 });
                 shopDialog.show(getParentFragmentManager(), "tag");
             } else {
-                currentShop = null;
-                shopNameText.setText("");
-                shopNameButton.setText(R.string.set_shop);
-                editor.putBoolean("atShop", false);
-                editor.apply();
+                clearShop(false);
             }
         });
 
@@ -271,29 +283,7 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
                     .show();
         }
 
-        return view;
-    }
-
-    private void setLocation(String shopName) {
-
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        final LocationListener locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(@NonNull Location location) {
-                geoProgress.setVisibility(View.GONE);
-                currentShop = dbHelper.getNewShop(shopName, location.getLatitude(), location.getLongitude());
-                shopNameText.setText("At " + shopName);
-                shopNameButton.setText(R.string.clear);
-                SharedPreferences sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean("atShop", true);
-                editor.apply();
-            }
-        };
-
-        Criteria criteria = new Criteria();
+        criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_COARSE);
         criteria.setPowerRequirement(Criteria.POWER_LOW);
         criteria.setAltitudeRequired(false);
@@ -303,14 +293,71 @@ public class ListFragment extends Fragment implements ExpandableSection.ClickLis
         criteria.setHorizontalAccuracy(Criteria.ACCURACY_HIGH);
         criteria.setVerticalAccuracy(Criteria.ACCURACY_HIGH);
 
-        final LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        return view;
+    }
+
+    private void setLocation(String shopName) {
+
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        final LocationListener locationListener = location -> {
+            geoProgress.setVisibility(View.GONE);
+            currentShop = dbHelper.getNewShop(shopName, location.getLatitude(), location.getLongitude());
+            shopNameText.setText("At " + shopName);
+            shopNameButton.setText(R.string.clear);
+            SharedPreferences sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putBoolean("atShop", true);
+            editor.apply();
+        };
+
+        final LocationManager locationManager = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
 
         locationManager.requestSingleUpdate(criteria, locationListener, null);
     }
 
     private void validateCurrentShop() {
+        if (Calendar.getInstance().get(Calendar.DAY_OF_MONTH) != currentShop.getDay()) {
+            clearShop(true);
+            return;
+        }
+
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
+        final LocationListener locationListener = location -> {
+            if (currentShop.isFarAway(location)) {
+                clearShop(true);
+            }
+        };
 
 
+        final LocationManager locationManager = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        locationManager.requestSingleUpdate(criteria, locationListener, null);
+
+    }
+
+    public void clearShop(boolean showMessage) {
+        SharedPreferences sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String shopName = currentShop.getName();
+        dbHelper.removeShopIfEmpty(currentShop.getId());
+        currentShop = null;
+        shopNameText.setText("");
+        shopNameButton.setText(R.string.set_shop);
+        editor.putBoolean("atShop", false);
+        editor.apply();
+
+        if (showMessage) {
+            new AlertDialog.Builder(getContext())
+                    .setTitle("Looks like you're no longer at " + shopName)
+                    .setMessage("Set a new shop to save your items to history")
+                    .setNeutralButton("OK", null)
+                    .show();
+        }
     }
 
     @Override

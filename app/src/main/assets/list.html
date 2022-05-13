@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/7f1cdbcaca.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        /* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
+        function openNavbar() {
+            var x = document.getElementById("myTopnav");
+            if (x.className === "topnav") {
+                x.className += " responsive";
+            } else {
+                x.className = "topnav";
+            }
+        } 
+    </script>
+</head>
+
+<body>
+    <div class="topnav" id="myTopnav">
+        <a href="list.html" class="active">Main list</a>
+        <a href="collections.html">Collections</a>
+        <a href="history.html">History</a>
+        <a href="javascript:void(0);" class="icon" onclick="openNavbar()">
+            <i class="fa fa-bars"></i>
+        </a>
+    </div>
+    <div class="main">
+        <div class="contents">
+            <h3>In this page</h3>
+            <a href="#addItem">Adding an item</a><br />
+            <a href="#usingList">Using the list</a><br />
+            <a href="#categories">Categories</a><br />
+            <a href="#shops">Shops</a><br />
+            <a href="#reminder">Setting a reminder</a><br />
+        </div>
+        <div class="helpContainer" id="addItem">
+            <h2>Adding an item</h2>
+            <hr />
+            <div class="item">
+                <div class="description">
+                    <p>Enter text into the box shown and press enter to add an item</p>
+                </div>
+                <div class="image">
+                    <img src="img/add_img.jpg" />
+                </div>
+            </div>
+            <hr />
+            <div class="item">
+                <div class="description">
+                    <p>Change the category you add items to using the dropdown next to your input <br />
+                        <a href="#categories">Read more on categories</a>
+                    </p>
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+                <div class="note"><span>Note: </span>You cannot add two of the same item to the same category</div>
+            </div>
+            <hr class="altHr" />
+
+            <h2 id="#usingList">Using the list</h2>
+            <hr />
+            <div class="item">
+                <div class="description">
+                    <p>Check off an item by tapping on it</p>
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+                <div class="note"><span>Note: </span>If there is no shop set when an item is checked then it will not be saved to history<br>
+                    See: <a href="#shops">Shops</a></div>
+            </div>
+            <hr />
+            <div class="item">
+                <div class="description">
+                    <p>Delete an item by swiping it</p>
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+            </div>
+            <hr />
+            <div class="item">
+                <div class="description">
+                    <p>Uncheck an item by tapping on it. It will return to it's original category. <br />
+                        The category is shown next to the return icon</p>
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+            </div>
+            <hr />
+            <div class="item">
+                <div class="description">
+                    <p>Clear and save items to history from <span>Cleared</span> using the clear button at the top of
+                        the section</p>
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+            </div>
+
+
+            <hr class="altHr" />
+
+            <h2 id="categories">Categories</h2>
+            <hr>
+            <div class="item">
+                <div class="description">
+                    <p>Collapse a category by tapping it</p>
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+            </div>
+            <hr />
+            <div class="item">
+                <div class="description">
+                    <p>Add a category using the dropdown menu and selecting <span>Add new...</span></p>
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+                <div class="note"><span>Note: </span>Categories will be deleted when you move off the page if there are
+                    no items in them</div>
+            </div>
+            <hr class="altHr"/>
+
+            <h2 id="shops">Shops</h2>
+            <hr>
+            <div class="item">
+                <div class="description">
+                    <p>Set the shop by pressing <span>Set shop</span> in the top bar</p>
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+            </div>
+            <div class="item">
+                <div class="description">
+                    <p>Clear the shop by pressing <span>Clear shop</span> when a shop is active</p>
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+                <div class="note"><span>Note: </span>Shops are automatically cleared a day after it was set or when you are far away</div>
+            </div>
+            <hr class="altHr">
+
+            <h2 id="reminder">Setting a reminder</h2>
+            <hr>
+            <div class="item">
+                <div class="description">
+                    <p>You can set a reminder to go shopping using the bell in the action bar</p>
+                </div>
+                <div class="image">
+                    <img src="" />
+                </div>
+                <div class="note"><span>Note: </span>You can only have one reminder at a time, setting a new one will clear the current reminder</div>
+            </div>
+            
+
+        </div>
+    </div>
+</body>
+
+</html>

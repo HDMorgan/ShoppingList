@@ -34,9 +34,12 @@
             android:id="@+id/listText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             android:singleLine="true"
             android:textSize="@dimen/default_font_size"
             tools:text="@tools:sample/cities" />
