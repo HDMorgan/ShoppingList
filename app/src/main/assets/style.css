@@ -22,11 +22,13 @@ hr {
     margin: 1em auto;
     width: 50%;
     border:solid 1px;
+    background-color: var(--accent);
 }
 
 .altHr {
     margin: 1em;
     color: var(--secondary);
+    background-color: var(--secondary);
     width: auto;
 }
 
